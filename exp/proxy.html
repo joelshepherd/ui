@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      const WATCH = Symbol("WATCH");
+
+      function state(_state) {
+        const proxy = new Proxy(_state, {
+          set(target, key, value) {
+            const result = Reflect.set(...arguments);
+            // @todo due for next tick and collate changes to one
+            if (result) listeners.forEach((fn) => fn(target));
+            return result;
+          },
+        });
+
+        const listeners = [];
+        proxy[WATCH] = (listener) => {
+          listeners.push(listener);
+          listener(_state);
+        };
+
+        return proxy;
+      }
+
+      const todo = state({ text: "", done: false });
+      todo.text = "Text";
+      todo[WATCH](console.log);
+      todo.done = true;
+    </script>
+  </body>
+</html>

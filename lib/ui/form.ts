@@ -1,5 +1,5 @@
-import { MaybeState, State } from "../state";
-import { Button } from "./controls";
+import { StateLike, State } from "../state";
+import { Button } from "./element";
 
 export function Form(child: Node, submit: () => void) {
   const element = document.createElement("form");
@@ -11,15 +11,11 @@ export function Form(child: Node, submit: () => void) {
   return element;
 }
 
-export function TextField(
-  value: State<string>,
-  action: (value: string) => void = (v: string) => value.next(v)
-) {
+export function TextField($value: State<string>) {
   const element = document.createElement("input");
   element.type = "text";
-  element.value = value.value;
-  element.oninput = () => action(element.value);
-  value.subscribe((v) => (element.value = v));
+  element.oninput = () => $value.next(element.value);
+  $value.subscribe((value) => (element.value = value));
   return element;
 }
 
@@ -43,7 +39,7 @@ export function Toggle(state: State<boolean>) {
   return element;
 }
 
-export function SubmitButton(text: MaybeState<string>) {
+export function SubmitButton(text: StateLike<string>) {
   const element = Button(text);
   element.type = "submit";
   return element;

@@ -1,47 +1,80 @@
-import { createStore } from "redux";
-import { State } from "./lib/state";
+import { State } from "../lib/state";
 
-export interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
+export class Todo {
+  $text: State<string>;
+  $done: State<boolean>;
 
-export const state = new State<Shape>([
-  {
-    id: 1,
-    text: "First Todo",
-    completed: false,
-  },
-]);
+  constructor(input: { text: string; done: boolean }) {
+    this.$text = new State(input.text);
+    this.$done = new State(input.done);
+  }
 
-type Shape = Todo[];
+  get text() {
+    return this.$text.value;
+  }
 
-type Action = { type: "ADD"; text: string } | { type: "TOGGLE"; id: number };
-
-function reducer(state: Shape = [], action: Action): Shape {
-  switch (action.type) {
-    case "ADD":
-      return state.concat({
-        id: state.length + 1,
-        text: action.text,
-        completed: false,
-      });
-
-    case "TOGGLE":
-      return state.map((todo) =>
-        todo.id === action.id ? { ...todo, completed: !todo.completed } : todo
-      );
-
-    default:
-      return state;
+  get done() {
+    return this.$done.value;
   }
 }
 
-const store = createStore(reducer, state.value);
-store.subscribe(() => {
-  state.next(store.getState());
-  console.log(store.getState());
-});
+export class TodoStore {
+  $todos: State<Todo[]>;
 
-export const dispatch = store.dispatch;
+  constructor(todos: Todo[]) {
+    this.$todos = new State(todos);
+  }
+
+  get todos() {
+    return this.$todos.value;
+  }
+
+  add(todo: Todo) {
+    this.$todos.next([...this.todos, todo]);
+  }
+}
+
+export const todoStore = new TodoStore([
+  new Todo({
+    text: "Example todo",
+    done: false,
+  }),
+]);
+
+// class TodoPrivate {
+//   #id: number;
+//   #text: string;
+//   #completed: boolean;
+
+//   constructor({ id, text, done: completed }: Todo) {
+//     this.#id = id;
+//     this.#text = text;
+//     this.#completed = completed;
+//   }
+
+//   set completed(value: boolean) {
+//     this.#completed = value;
+//   }
+// }
+
+// export class Todo extends State<{
+//   id: number;
+//   text: string;
+//   done: boolean;
+// }> {
+//   get id() {
+//     return this.value.id;
+//   }
+
+//   get text() {
+//     return this.value.text;
+//   }
+
+//   get done() {
+//     return this.value.done;
+//   }
+
+//   toggle() {
+//     return this.next({ ...this.value, done: !this.value.done });
+//   }
+// }
