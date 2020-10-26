@@ -2,23 +2,53 @@
 
 UI reactivity is handled through observables. Currently using rxjs's implementation.
 
-## StateLike options
+## Interface options
 
-Match the rxjs observable interface
+rxjs style:
 
 ```ts
-interface StateLike<T> {
-  // value: T; // Possibly last value too
+interface Observable<T> {
   next(value: T): void;
   subscribe(listener: (value: T) => void): void;
 }
 ```
 
-Use a proxied object that can be watched for changes.
+"mutatable" style:
 
 ```ts
-const LISTENER = Symbol("LISTENER");
-interface StateLike {
-  [LISTENER]: (listener: (value: T) => void)
+interface State<T> {
+  value: T; // uses setter
+  subscribe(listener: (value: T) => void): void;
+}
+```
+
+object version:
+
+```ts
+type ObservableObject<T> = {
+  [K in keyof T]: T[K];
+  // ts4.1 below
+  // [K in keyof T as `\$${K}`]: Observable<T[K]>;
+};
+```
+
+## Implementation for elements
+
+```ts
+// Elements accept possibly observable inputs
+type ObservableOption<T> = T | Observable<T>;
+
+// Helper function for subscription to possibly observable inputs
+function bindProperty<S, T extends object>(
+  target: T,
+  key: keyof T,
+  $value: ObservableOption<T[typeof key]>
+): void;
+
+// Example in use
+function Button($text: ObservableOption<string>) {
+  const element = document.createElement("button");
+  bindProperty(element, "textContent", $text);
+  return element;
 }
 ```

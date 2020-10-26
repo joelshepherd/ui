@@ -1,6 +1,22 @@
 import { StateLike, State } from "../state";
 import { Button } from "./element";
 
+/**
+ * Could you pass `state` to form and have elements under inherit their state?
+ *
+ * ```ts
+ * const state = new State({ name: "", email: "" });
+ * const form = Form(
+ *   Stack([
+ *     TextField("name"),
+ *     TextField("email"),
+ *     SubmitButton("Submit"),
+ *   ]),
+ *   state,
+ * );
+ * ```
+ */
+
 export function Form(child: Node, submit: () => void) {
   const element = document.createElement("form");
   element.addEventListener("submit", (event) => {
