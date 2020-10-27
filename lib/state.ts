@@ -1,89 +1,75 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
-type Watcher<T, R> = (value: T) => R;
+// State is powered by rxjs observables
 
-interface BareState<T> {
-  next(value: T): void;
-  subscribe(listener: (value: T) => void): void;
-}
+/**
+ * A binding to an element. May be a literal or observable.
+ */
+export type Binding<T> = T | Observable<T>;
 
-// Try with just rxjs instead
-export class State<T> extends BehaviorSubject<T> {}
-
-export type StateLike<T> = T | BareState<T>;
-
-export function watchStateLike<T>(
-  state: StateLike<T>,
+/**
+ * Attach a binding to a listener
+ */
+export function bindListener<T>(
+  $state: Binding<T>,
   listener: (state: T) => void
-) {
-  if (isState(state)) {
-    state.subscribe(listener);
+): void {
+  if (isObservable($state)) {
+    $state.subscribe(listener);
   } else {
-    listener(state);
+    listener($state);
   }
 }
 
-export function isState<T>(stateLike: StateLike<T>): stateLike is BareState<T> {
-  return stateLike instanceof Observable;
+/**
+ * Attach a binding to an object's property.
+ */
+export function bindProperty<T extends object>(
+  target: T,
+  key: keyof T,
+  $state: Binding<T[typeof key]>
+): void {
+  bindListener($state, (value) => {
+    target[key] = value;
+  });
 }
 
-// export class State<T> {
-//   #value: T;
-//   #watchers: Watcher<T, any>[] = [];
-//   constructor(value: T) {
-//     this.#value = value;
-//   }
-//   set value(value: T) {
-//     this.next(value);
-//   }
-//   get value() {
-//     return this.#value;
-//   }
-//   next(value: T) {
-//     console.log(value);
-//     this.#value = value;
-//     this.#watchers.forEach((watcher) => watcher(value));
-//   }
-//   subscribe(watcher: Watcher<T, any>) {
-//     this.#watchers.push(watcher);
-//   }
-//   [Symbol.asyncIterator]() {
-//     let self = this;
-//     return {
-//       next() {
-//         return new Promise<{ value: T }>((res) => {
-//           self.subscribe((value) => res({ value }));
-//         });
-//       },
-//     };
-//   }
+/**
+ * An observable state value.
+ */
+export class State<T> extends BehaviorSubject<T> {}
+
+function isObservable<T>(binding: Binding<T>): binding is Observable<T> {
+  return binding instanceof Observable;
+}
+
+// @todo ponder these
+
+// export function Watch<T extends Node>(state: State<T>) {
+//   let node = state.value;
+
+//   state.subscribe((newNode) => {
+//     if (!node.parentNode) throw new Error("Trying to update unattached node");
+//     node.parentNode.replaceChild(newNode, node);
+//     node = newNode;
+//   });
+
+//   return node;
 // }
 
-export function Watch<T extends Node>(state: State<T>) {
-  let node = state.value;
+// export function WatchMap<T, R extends Node>(
+//   state: State<T>,
+//   transform: (state: T) => R
+// ) {
+//   let node = transform(state.value);
 
-  state.subscribe((newNode) => {
-    if (!node.parentNode) throw new Error("Trying to update unattached node");
-    node.parentNode.replaceChild(newNode, node);
-    node = newNode;
-  });
+//   state.pipe(map(transform)).subscribe((newNode) => {
+//     // we haven't attached yet
+//     if (!node.parentNode) return;
+//     node.parentNode.replaceChild(newNode, node);
+//     node = newNode;
+//   });
 
-  return node;
-}
-
-export function WatchMap<T, R extends Node>(
-  state: State<T>,
-  transform: (state: T) => R
-) {
-  let node = transform(state.value);
-
-  state.pipe(map(transform)).subscribe((newNode) => {
-    // we haven't attached yet
-    if (!node.parentNode) return;
-    node.parentNode.replaceChild(newNode, node);
-    node = newNode;
-  });
-
-  return node;
-}
+//   return node;
+// }

@@ -1,11 +1,12 @@
-import { StateLike, State } from "../state";
+import { Binding, bindProperty, State } from "../state";
 import { Button } from "./element";
+import { Action, Widget } from "./types";
 
-/**
+/*
  * Could you pass `state` to form and have elements under inherit their state?
  *
  * ```ts
- * const state = new State({ name: "", email: "" });
+ * const state = new Binding({ name: "", email: "" });
  * const form = Form(
  *   Stack([
  *     TextField("name"),
@@ -17,12 +18,18 @@ import { Button } from "./element";
  * ```
  */
 
-export function Form(child: Node, submit: () => void) {
+interface FormOptions {
+  action?: Action;
+}
+
+export function Form(child: Widget, opts: FormOptions = {}) {
   const element = document.createElement("form");
-  element.addEventListener("submit", (event) => {
-    event.preventDefault();
-    submit();
-  });
+  if (opts.action) {
+    element.onsubmit = (event) => {
+      event.preventDefault();
+      opts.action!();
+    };
+  }
   element.appendChild(child);
   return element;
 }
@@ -31,32 +38,27 @@ export function TextField($value: State<string>) {
   const element = document.createElement("input");
   element.type = "text";
   element.oninput = () => $value.next(element.value);
-  $value.subscribe((value) => (element.value = value));
+  bindProperty(element, "value", $value);
   return element;
 }
 
-export function TextEditor(
-  value: State<string>,
-  action: (value: string) => void = (v: string) => value.next(v)
-) {
+export function TextEditor($value: State<string>) {
   const element = document.createElement("textarea");
-  element.value = value.value;
-  element.oninput = () => action(element.value);
-  value.subscribe((v) => (element.value = v));
+  element.oninput = () => $value.next(element.value);
+  bindProperty(element, "value", $value);
   return element;
 }
 
-export function Toggle(state: State<boolean>) {
+export function Toggle($value: State<boolean>) {
   const element = document.createElement("input");
   element.type = "checkbox";
-  element.checked = state.value;
-  element.oninput = () => state.next(element.checked);
-  state.subscribe((value) => (element.checked = value));
+  element.oninput = () => $value.next(element.checked);
+  bindProperty(element, "checked", $value);
   return element;
 }
 
-export function SubmitButton(text: StateLike<string>) {
-  const element = Button(text);
+export function SubmitButton($text: Binding<string>) {
+  const element = Button($text);
   element.type = "submit";
   return element;
 }

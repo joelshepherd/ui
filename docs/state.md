@@ -27,7 +27,7 @@ object version:
 ```ts
 type ObservableObject<T> = {
   [K in keyof T]: T[K];
-  // ts4.1 below
+  // ts4.1 below, similar to @State in swift
   // [K in keyof T as `\$${K}`]: Observable<T[K]>;
 };
 ```
@@ -36,17 +36,17 @@ type ObservableObject<T> = {
 
 ```ts
 // Elements accept possibly observable inputs
-type ObservableOption<T> = T | Observable<T>;
+type Binding<T> = T | Observable<T>;
 
 // Helper function for subscription to possibly observable inputs
 function bindProperty<S, T extends object>(
   target: T,
   key: keyof T,
-  $value: ObservableOption<T[typeof key]>
+  $value: Binding<T[typeof key]>
 ): void;
 
 // Example in use
-function Button($text: ObservableOption<string>) {
+function Button($text: Binding<string>) {
   const element = document.createElement("button");
   bindProperty(element, "textContent", $text);
   return element;

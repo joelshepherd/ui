@@ -1,40 +1,69 @@
-import { StateLike, watchStateLike } from "../state";
+import { State } from "../state";
+import { Widget } from "./types";
 
-export function Pack<T extends Node>(children: T[]) {
+interface StackOptions {
+  orientation: "horizontal" | "vertical";
+}
+
+export function Stack(
+  children: Widget[],
+  opts: StackOptions = { orientation: "vertical" }
+) {
   const element = document.createElement("div");
+  element.style.display = "flex";
+  element.style.flexDirection =
+    opts.orientation === "vertical" ? "column" : "row";
   children.forEach(element.appendChild.bind(element));
   return element;
 }
 
-export function Stack<T extends Node>(children: T[]) {
-  children.forEach((child) => {
-    if (child instanceof HTMLElement) child.style.display = "block";
-  });
-  return Pack(children);
+export function HStack(children: Widget[]) {
+  return Stack(children, { orientation: "horizontal" });
 }
 
-// Should stack just accept observables and this is redundant?
-export function List<T>(
-  $source: StateLike<T[]>,
-  transform: (state: T) => Node // @todo Should this be handled by a separate function
-) {
-  const element = document.createElement("div");
-
-  watchStateLike($source, (items) => {
-    // @todo handle matching existing nodes
-    // for now we just replace everything
-    while (element.firstChild) element.removeChild(element.firstChild);
-
-    items.map(transform).forEach(element.appendChild.bind(element));
-  });
-
-  return element;
+export function VStack(children: Widget[]) {
+  return Stack(children, { orientation: "vertical" });
 }
 
 export function Spacer(amount = 10) {
-  const element = document.createElement("spacer");
-  element.style.display = "inline-block";
+  const element = document.createElement("div");
   element.style.width = `${amount}px`;
   element.style.height = `${amount}px`;
   return element;
 }
+
+// list
+
+export function _VList<T>($state: State<T[]>, map: (item: T) => Widget) {
+  let element = VStack([]);
+
+  $state.subscribe((state) => {
+    // @todo replace this with a smart diff of children based on key
+    const replacement = VStack(state.map(map));
+    element.replaceWith(replacement);
+    element = replacement;
+  });
+
+  return element;
+}
+
+// export function List<T, K extends keyof T>(
+//   $state: State<T[]>,
+//   key: K,
+//   map: (item: T) => Widget
+// ) {
+//   let element = document.createElement("div");
+
+//   $state.subscribe((state) => {
+//     // @todo replace this with a smart diff of children based on key
+//     const fragment = document.createDocumentFragment();
+//     state.map(map).forEach(fragment.appendChild.bind(fragment));
+
+//     const replacement = document.createElement("div");
+//     replacement.appendChild(fragment);
+//     element.replaceChild(replacement, element);
+//     element = replacement;
+//   });
+
+//   return element;
+// }

@@ -1,13 +1,14 @@
-import { State, WatchMap } from "../lib/state";
+import { State } from "../lib/state";
 import {
   Form,
-  Pack,
+  HStack,
   Spacer,
-  Stack,
   SubmitButton,
   Text,
   TextField,
   Toggle,
+  VStack,
+  _VList,
 } from "../lib/ui";
 import { Todo, todoStore } from "./data";
 
@@ -17,9 +18,9 @@ import { Todo, todoStore } from "./data";
 function Items() {
   const $showDone = new State(false);
 
-  return Stack([
-    Pack([Text("Show completed"), Spacer(), Toggle($showDone)]),
-    WatchMap(todoStore.$todos, (todos) => Stack(todos.map(Item))),
+  return VStack([
+    HStack([Text("Show completed"), Spacer(), Toggle($showDone)]),
+    _VList(todoStore.$todos, Item),
   ]);
 }
 
@@ -27,7 +28,7 @@ function Items() {
  * Shows a single todo item
  */
 function Item(todo: Todo) {
-  return Pack([Toggle(todo.$done), Spacer(), Text(todo.$text)]);
+  return HStack([Toggle(todo.$done), Spacer(), Text(todo.$text)]);
 }
 
 /**
@@ -41,10 +42,9 @@ function Input() {
     state.next("");
   };
 
-  return Form(
-    Pack([TextField(state), Spacer(), SubmitButton("Add")]),
-    handleSubmit
-  );
+  return Form(HStack([TextField(state), Spacer(), SubmitButton("Add")]), {
+    action: handleSubmit,
+  });
 }
 
 /**
@@ -52,5 +52,5 @@ function Input() {
  */
 export function Root() {
   // Create scaffold
-  return Stack([Text("Todo List"), Spacer(), Items(), Spacer(), Input()]);
+  return VStack([Text("Todo List"), Spacer(), Items(), Spacer(), Input()]);
 }

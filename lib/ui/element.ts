@@ -1,24 +1,32 @@
-import { StateLike, watchStateLike } from "../state";
+import { Binding, bindProperty } from "../state";
+import { Action } from "./types";
 
-export function Text($text: StateLike<string>) {
+export function Text($text: Binding<string>) {
   const element = document.createTextNode("");
-  watchStateLike($text, (text) => {
-    element.textContent = text;
-  });
+  bindProperty(element, "nodeValue", $text);
   return element;
 }
 
-export function Button(text: StateLike<string>, action?: () => void) {
+interface ButtonOptions {
+  /**
+   * @unstable
+   * Could be a binding instead.
+   * Could we input a observable instead that we can pipe events onto?
+   * Such as: `action?: Observable<void>`
+   */
+  action?: Action;
+}
+
+export function Button($text: Binding<string>, opts: ButtonOptions = {}) {
   const element = document.createElement("button");
-  element.append(Text(text));
-  if (action) element.onclick = action;
+  element.type = "button";
+  element.append(Text($text));
+  if (opts.action) element.onclick = opts.action;
   return element;
 }
 
-export function Image($url: StateLike<string>) {
+export function Image($url: Binding<string>) {
   const element = document.createElement("img");
-  watchStateLike($url, (url) => {
-    element.src = url;
-  });
+  bindProperty(element, "src", $url);
   return element;
 }
