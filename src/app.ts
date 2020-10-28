@@ -10,7 +10,7 @@ import {
   VStack,
   _VList,
 } from "../lib/ui";
-import { Todo, todoStore } from "./data";
+import { Store, Todo } from "./data";
 
 /**
  * Shows a list of todo items
@@ -20,7 +20,7 @@ function Items() {
 
   return VStack([
     HStack([Text("Show completed"), Spacer(), Toggle($showDone)]),
-    _VList(todoStore.$todos, Item),
+    _VList(store.todos, Item),
   ]);
 }
 
@@ -28,7 +28,7 @@ function Items() {
  * Shows a single todo item
  */
 function Item(todo: Todo) {
-  return HStack([Toggle(todo.$done), Spacer(), Text(todo.$text)]);
+  return HStack([Toggle(todo.done), Spacer(), Text(todo.text)]);
 }
 
 /**
@@ -38,7 +38,7 @@ function Input() {
   const state = new State("");
 
   const handleSubmit = () => {
-    todoStore.add(new Todo({ text: state.value, done: false }));
+    store.todos.push(new Todo(state.value));
     state.next("");
   };
 
@@ -51,6 +51,8 @@ function Input() {
  * App root
  */
 export function Root() {
-  // Create scaffold
   return VStack([Text("Todo List"), Spacer(), Items(), Spacer(), Input()]);
 }
+
+// Store
+const store = new Store([new Todo("Example")]);

@@ -1,5 +1,4 @@
 import { BehaviorSubject, Observable } from "rxjs";
-import { map } from "rxjs/operators";
 
 // State is powered by rxjs observables
 
@@ -16,6 +15,7 @@ export function bindListener<T>(
   listener: (state: T) => void
 ): void {
   if (isObservable($state)) {
+    // @todo Handle unsubscribing
     $state.subscribe(listener);
   } else {
     listener($state);
@@ -44,8 +44,48 @@ function isObservable<T>(binding: Binding<T>): binding is Observable<T> {
   return binding instanceof Observable;
 }
 
-// @todo ponder these
+// experiments with state object
 
+// export type StateObject<T> = {
+//   [P in keyof T]: State<T[P]>;
+// };
+
+// export function createStateObject<T>(input: T): StateObject<T> {
+//   const state: any = { ...input };
+//   Object.keys(state).map((key) => {
+//     state[key] = new State(state[key]);
+//   });
+//   return state;
+// }
+
+// Possibly provide these
+
+export class BoolState extends State<boolean> {
+  toggle() {
+    this.next(!this.value);
+  }
+}
+
+export class ListState<T> extends State<T[]> {
+  push(...items: T[]) {
+    this.next([...this.value, ...items]);
+  }
+}
+
+// @todo could give "context" items?
+// interface Widget {
+//   stateProviders?: State<unknown>[];
+// }
+
+// export function provideState(element: Widget, state: State<unknown>) {
+//   (element.stateProviders ??= []).push(state);
+// }
+
+// export function consumeState<T>(element: Widget, state: State<T>) {
+//   return element.stateProviders?.find((provider) => provider === state);
+// }
+
+// @todo ponder these
 // export function Watch<T extends Node>(state: State<T>) {
 //   let node = state.value;
 
