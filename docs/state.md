@@ -32,6 +32,28 @@ type ObservableObject<T> = {
 };
 ```
 
+objects with bindings:
+
+```ts
+const state = createState({ text: "" });
+
+// can be used like an normal object
+if (state.text === "") {
+  console.log("Text is empty!"); // prints "Text is empty!"
+}
+
+// but can be bound to
+state.binding("text").subscribe((text) => {
+  console.log("Text has changed", text);
+});
+
+// now changes are
+state.text = "Hello!"; // prints "Text has changed", "Hello!"
+
+// can be bound to elements
+TextField(state.binding("text"));
+```
+
 ## Implementation for elements
 
 ```ts
