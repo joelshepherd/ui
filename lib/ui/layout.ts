@@ -17,10 +17,12 @@ export function Stack(
   return element;
 }
 
+// @unstable
 export function HStack(children: Widget[]) {
   return Stack(children, { orientation: "horizontal" });
 }
 
+// @unstable
 export function VStack(children: Widget[]) {
   return Stack(children, { orientation: "vertical" });
 }
