@@ -6,5 +6,5 @@
     "strict": true,
     "target": "es2020"
   },
-  "include": ["lib", "src"]
+  "include": ["exp", "lib", "src"]
 }
