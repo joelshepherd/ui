@@ -12,7 +12,7 @@ The observable interface that adheres to common javascript observable interfaces
 
 ```ts
 interface Observable<T> {
-  subscribe(observer: (value: T) => void);
+  subscribe(observer: (value: T) => void): void;
 }
 
 interface MutableObservable<T> extends Observable<T> {

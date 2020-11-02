@@ -1,50 +1,36 @@
-// objects with binding
-// experiment
-// @todo mutable version
+// objects with binding experiment
 
-import { Observable } from "rxjs";
+import { BehaviorSubject } from "rxjs";
+import { MutableObservable } from "../../lib/state";
 
 function createBinding<T, K extends keyof T>(
   target: T,
   prop: K
-): Observable<T[K]> {
-  return new Observable((observer) => {
-    const previousProperty = Object.getOwnPropertyDescriptor(target, prop);
+): MutableObservable<T[K]> {
+  const subject = new BehaviorSubject(target[prop]);
 
-    let value = target[prop];
-
-    Object.defineProperty(target, prop, {
-      configurable: true,
-      enumerable: true,
-      get() {
-        return value;
-      },
-      set(newValue) {
-        value = newValue;
-        observer.next(value);
-      },
-    });
-
-    return () => {
-      Object.defineProperty(
-        target,
-        prop,
-        previousProperty
-          ? { ...previousProperty, value }
-          : { configurable: true, enumerable: true, writable: true, value }
-      );
-    };
+  Object.defineProperty(target, prop, {
+    configurable: true,
+    enumerable: true,
+    get() {
+      return subject.value;
+    },
+    set(value) {
+      subject.next(value);
+    },
   });
+
+  return subject;
 }
 
 const BINDINGS = Symbol("BINDINGS");
 
-type Bindings<T> = Partial<Record<keyof T, Observable<any>>>;
+type Bindings<T> = Partial<Record<keyof T, MutableObservable<any>>>;
 
 export function getBinding<T, K extends keyof T>(
   target: T,
   prop: K
-): Observable<T[K]> {
+): MutableObservable<T[K]> {
   const bindings: Bindings<T> = ((target as any)[BINDINGS] ??= {});
 
   return (bindings[prop] ??= createBinding(target, prop));

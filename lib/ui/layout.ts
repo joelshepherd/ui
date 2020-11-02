@@ -1,4 +1,3 @@
-import { State } from "../state";
 import { Widget } from "./types";
 
 interface StackOptions {
@@ -27,45 +26,32 @@ export function VStack(children: Widget[]) {
   return Stack(children, { orientation: "vertical" });
 }
 
-export function Spacer(amount = 10) {
+export function Divider() {
+  const element = document.createElement("hr");
+  element.style.width = "100%";
+  return element;
+}
+
+export function Spacer(minSize = 10) {
   const element = document.createElement("div");
-  element.style.width = `${amount}px`;
-  element.style.height = `${amount}px`;
+  element.style.flexGrow = "1";
+  if (minSize) {
+    element.style.minWidth = `${minSize}px`;
+    element.style.minHeight = `${minSize}px`;
+  }
   return element;
 }
 
-// list
-
-export function _VList<T>($state: State<T[]>, map: (item: T) => Widget) {
-  let element = VStack([]);
-
-  $state.subscribe((state) => {
-    // @todo replace this with a smart diff of children based on key
-    const replacement = VStack(state.map(map));
-    element.replaceWith(replacement);
-    element = replacement;
-  });
-
-  return element;
+interface ViewOptions {
+  height?: number;
+  width?: number;
 }
 
-// export function List<T, K extends keyof T>(
-//   $state: State<T[]>,
-//   key: K,
-//   map: (item: T) => Widget
-// ) {
-//   let element = document.createElement("div");
-
-//   $state.subscribe((state) => {
-//     // @todo replace this with a smart diff of children based on key
-//     const fragment = document.createDocumentFragment();
-//     state.map(map).forEach(fragment.appendChild.bind(fragment));
-
-//     const replacement = document.createElement("div");
-//     replacement.appendChild(fragment);
-//     element.replaceChild(replacement, element);
-//     element = replacement;
-//   });
-
-//   return element;
-// }
+export function _View(child: Widget, opts: ViewOptions = {}) {
+  const element = document.createElement("div");
+  element.style.margin = "0 auto";
+  if (opts.height) element.style.height = `${opts.height}px`;
+  if (opts.width) element.style.width = `${opts.width}px`;
+  element.appendChild(child);
+  return element;
+}

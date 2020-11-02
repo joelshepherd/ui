@@ -1,5 +1,7 @@
-import { State } from "../lib/state";
+import { bindable } from "../exp/state/binding";
+import { BoolState, combine, Observable } from "../lib/state";
 import {
+  Divider,
   Form,
   HStack,
   Spacer,
@@ -8,6 +10,8 @@ import {
   TextField,
   Toggle,
   VStack,
+  _If,
+  _View,
   _VList,
 } from "../lib/ui";
 import { Store, Todo } from "./data";
@@ -16,42 +20,51 @@ import { Store, Todo } from "./data";
  * Shows a list of todo items
  */
 function Items() {
-  const $showDone = new State(false);
+  const showDone = new BoolState(false);
 
   return VStack([
-    HStack([Text("Show completed"), Spacer(), Toggle($showDone)]),
-    _VList(store.todos, Item),
+    HStack([Spacer(), Toggle(showDone, "Show done")]),
+    _VList(store.todos, (todo) => Item(todo, showDone)),
   ]);
 }
 
 /**
  * Shows a single todo item
  */
-function Item(todo: Todo) {
-  return HStack([Toggle(todo.done), Spacer(), Text(todo.text)]);
+function Item(todo: Todo, showBinding: Observable<boolean>) {
+  const shouldShow = combine(
+    [todo.done, showBinding],
+    ([done, show]) => !done || show
+  );
+
+  return _If(shouldShow, () => Toggle(todo.done, todo.text));
 }
 
 /**
  * Shows a todo text input
  */
 function Input() {
-  const state = new State("");
+  const state = bindable({ text: "" });
 
   const handleSubmit = () => {
-    store.todos.push(new Todo(state.value));
-    state.next("");
+    store.todos.push(new Todo(state.text));
+    state.text = "";
   };
 
-  return Form(HStack([TextField(state), Spacer(), SubmitButton("Add")]), {
-    action: handleSubmit,
-  });
+  return Form(
+    HStack([TextField(state.binding("text")), Spacer(), SubmitButton("Add")]),
+    { action: handleSubmit }
+  );
 }
 
 /**
  * App root
  */
 export function Root() {
-  return VStack([Text("Todo List"), Spacer(), Items(), Spacer(), Input()]);
+  return _View(
+    VStack([Text("Todo List"), Divider(), Items(), Divider(), Input()]),
+    { width: 500 }
+  );
 }
 
 // Store
