@@ -1,4 +1,4 @@
-import { BehaviorSubject, combineLatest } from "rxjs";
+import { BehaviorSubject, combineLatest, Subject } from "rxjs";
 import { map } from "rxjs/operators";
 
 // State is powered by rxjs observables
@@ -9,55 +9,6 @@ export interface Observable<T> {
 
 export interface MutableObservable<T> extends Observable<T> {
   next(value: T): void;
-}
-
-/**
- * A binding to an element. May be a literal or observable.
- */
-export type Binding<T> = T | Observable<T>;
-
-/**
- * A mutable binding to an elements.
- */
-export type MutableBinding<T> = MutableObservable<T>;
-
-/**
- * Attach a binding to a listener
- */
-export function bindListener<T>(
-  $state: Binding<T>,
-  listener: (state: T) => void
-): void {
-  if (isObservable($state)) {
-    // @todo Handle unsubscribing
-    $state.subscribe(listener);
-  } else {
-    listener($state);
-  }
-}
-
-/**
- * Attach a binding to an object's property.
- */
-export function bindProperty<T extends object>(
-  target: T,
-  key: keyof T,
-  $state: Binding<T[typeof key]>
-): void {
-  bindListener($state, (value) => {
-    target[key] = value;
-  });
-}
-
-/**
- * An observable state value.
- */
-export class State<T>
-  extends BehaviorSubject<T>
-  implements MutableObservable<T> {}
-
-function isObservable<T>(binding: Binding<T>): binding is Observable<T> {
-  return typeof binding === "object" && "subscribe" in binding;
 }
 
 // experiments with state object
@@ -75,6 +26,24 @@ function isObservable<T>(binding: Binding<T>): binding is Observable<T> {
 // }
 
 // Possibly provide these
+
+/// An action listener.
+export class Action<T = void>
+  extends Subject<T>
+  implements MutableObservable<T> {
+  static subscribe<T = void>(subscriber: (value: T) => void) {
+    const action = new Action<T>();
+    action.subscribe(subscriber);
+    return action;
+  }
+}
+
+/**
+ * An observable state value.
+ */
+export class State<T>
+  extends BehaviorSubject<T>
+  implements MutableObservable<T> {}
 
 export class BoolState extends State<boolean> {
   toggle() {

@@ -1,6 +1,6 @@
-import { Binding, bindProperty, MutableBinding } from "../state";
 import { Button, Text } from "./element";
-import { Action, Widget } from "./types";
+import { Action, Bind, MutBind, Widget } from "./types";
+import { bindProperty } from "./_helpers";
 
 /*
  * Could you pass `state` to form and have elements under inherit their state?
@@ -22,50 +22,46 @@ interface FormOptions {
   action?: Action;
 }
 
-export function Form(child: Widget, opts: FormOptions = {}) {
+export function Form(child: Widget, { action }: FormOptions = {}) {
   const element = document.createElement("form");
-  if (opts.action) {
+  if (action) {
     element.onsubmit = (event) => {
       event.preventDefault();
-      opts.action!();
+      action.next();
     };
   }
   element.appendChild(child);
   return element;
 }
 
-export function TextField($value: MutableBinding<string>) {
+export function TextField(value: MutBind<string>) {
   const element = document.createElement("input");
   element.type = "text";
-  element.oninput = () => $value.next(element.value);
-  bindProperty(element, "value", $value);
+  element.oninput = () => value.next(element.value);
+  bindProperty(element, "value", value);
   return element;
 }
 
-export function TextEditor($value: MutableBinding<string>) {
+export function TextEditor(value: MutBind<string>) {
   const element = document.createElement("textarea");
-  element.oninput = () => $value.next(element.value);
-  bindProperty(element, "value", $value);
+  element.oninput = () => value.next(element.value);
+  bindProperty(element, "value", value);
   return element;
 }
 
-export function Toggle(
-  $value: MutableBinding<boolean>,
-  $label?: Binding<string>
-) {
-  const label = document.createElement("label");
+export function Toggle(value: MutBind<boolean>, label?: Bind<string>) {
+  const element = document.createElement("label");
   const input = document.createElement("input");
   input.type = "checkbox";
-  input.style.verticalAlign = "middle";
-  input.oninput = () => $value.next(input.checked);
-  bindProperty(input, "checked", $value);
-  label.appendChild(input);
-  if ($label) label.appendChild(Text($label));
-  return label;
+  input.oninput = () => value.next(input.checked);
+  bindProperty(input, "checked", value);
+  element.appendChild(input);
+  if (label) element.appendChild(Text(label));
+  return element;
 }
 
-export function SubmitButton($text: Binding<string>) {
-  const element = Button($text);
+export function SubmitButton(text: Bind<string>) {
+  const element = Button(text);
   element.type = "submit";
   return element;
 }

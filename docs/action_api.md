@@ -25,6 +25,8 @@ const handler = () => {
 
 ### Observables
 
+> Probably going this approach because of the one-direction binding and combining.
+
 - pro:
   - can switch to other observables
   - follows the same one-way binding approach as values
@@ -53,7 +55,7 @@ handler.switch(state).subscribe((text) => {
 
 ```ts
 const state = new State("");
-const handler = (obs: Observable<void>) =>
+const handler = (obs) =>
   obs.switch(state).subscribe((text) => {
     store.todos.push(new Todo(text));
     state.next("");

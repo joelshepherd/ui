@@ -54,6 +54,14 @@ state.text = "Hello!"; // prints "Text has changed", "Hello!"
 TextField(state.binding("text"));
 ```
 
+objects with eager bindings:
+
+```ts
+const state = observableObject({ text: "" });
+TextField(state.text$);
+state.text = "Hello";
+```
+
 ## Implementation for elements
 
 ```ts
