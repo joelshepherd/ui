@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "dev": "parcel src/index.html",
+    "example": "parcel example/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

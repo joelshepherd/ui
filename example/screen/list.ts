@@ -3,13 +3,13 @@ import {
   Divider,
   Form,
   HStack,
+  If,
   Spacer,
   SubmitButton,
   TextField,
   Toggle,
+  VList,
   VStack,
-  _If,
-  _VList,
 } from "../../lib/ui";
 import { Store, Todo } from "../store";
 
@@ -26,7 +26,7 @@ function Items(todos: Observable<Todo[]>) {
 
   return VStack([
     HStack([Spacer(), Toggle(showDone, "Show done")]),
-    _VList(todos, (todo) => Item(todo, showDone)),
+    VList(todos, (todo) => Item(todo, showDone)),
   ]);
 }
 
@@ -37,7 +37,7 @@ function Item(todo: Todo, showDone: Observable<boolean>) {
     ([done, show]) => !done || show
   );
 
-  return _If(shouldShow, () => Toggle(todo.done, todo.text));
+  return If(shouldShow, () => Toggle(todo.done, todo.text));
 }
 
 /// Show an input

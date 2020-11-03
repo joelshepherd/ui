@@ -2,7 +2,7 @@ import { Observable } from "../state";
 import { VStack } from "./layout";
 import { Widget } from "./types";
 
-export function _VList<T>($state: Observable<T[]>, map: (item: T) => Widget) {
+export function VList<T>($state: Observable<T[]>, map: (item: T) => Widget) {
   let element = VStack([]);
 
   $state.subscribe((state) => {
@@ -15,29 +15,29 @@ export function _VList<T>($state: Observable<T[]>, map: (item: T) => Widget) {
   return element;
 }
 
-export function _Switch<T extends keyof any>(
+export function Switch<T extends keyof any>(
   state: Observable<T>,
   cases: Record<T, () => Widget>
 ) {
-  return _Subscribe(state, (value) => {
-    if (!cases[value]) throw new Error("Unabled case");
+  return Subscribe(state, (value) => {
+    if (!cases[value]) throw new Error("Undefined case");
     return cases[value]();
   });
 }
 
-export function _If(
+export function If(
   condition: Observable<boolean>,
   then: () => Widget,
   otherwise?: () => Widget
 ) {
-  return _Subscribe(condition, (value) => {
+  return Subscribe(condition, (value) => {
     if (value) return then();
     else if (otherwise) return otherwise();
     return _Empty();
   });
 }
 
-export function _Subscribe<T>(
+export function Subscribe<T>(
   observable: Observable<T>,
   observer: (value: T) => Widget
 ) {

@@ -1,5 +1,5 @@
 import { State } from "../lib/state";
-import { Divider, Text, VStack, _Switch, _View } from "../lib/ui";
+import { Divider, Switch, Text, VStack, _View } from "../lib/ui";
 import { HelpScreen } from "./screen/help";
 import { ListScreen } from "./screen/list";
 import { Nav } from "./widget/nav";
@@ -15,7 +15,7 @@ export function Root() {
       Text("Todo"),
       Nav(screen),
       Divider(),
-      _Switch(screen, {
+      Switch(screen, {
         list: ListScreen,
         help: HelpScreen,
       }),

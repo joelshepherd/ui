@@ -84,3 +84,16 @@ export function combine<T extends Observable<any>[], R>(
 ): Observable<R> {
   return combineLatest(obs).pipe(map(projection as any));
 }
+
+/// Template string observable interpolation
+export function sub(
+  templates: TemplateStringsArray,
+  ...obs: Observable<string>[]
+) {
+  return combine(obs, (values) =>
+    templates.reduce(
+      (carry, template, index) => carry + template + (values[index] ?? ""),
+      ""
+    )
+  );
+}
