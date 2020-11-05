@@ -1,12 +1,11 @@
 // @ts-nocheck
-
 type Content = HTMLElement;
 
 interface View {
   content: Content;
 }
 
-type Orientation = "horizonal" | "vertical";
+type Orientation = "horizontal" | "vertical";
 
 class Stack implements View {
   content: Content;
@@ -18,7 +17,7 @@ class Stack implements View {
     children.forEach(this.content.appendChild);
   }
 
-  orient(orientation: "horizonal" | "vertical") {
+  orient(orientation: "horizontal" | "vertical") {
     this.content.style.flexDirection = orientation;
   }
 }
@@ -30,7 +29,7 @@ function Test() {
     new TextField(state),
     new Spacer(),
     new Button("Submit"),
-  ]).orient("horizonal");
+  ]).orient("horizontal");
 }
 
 function Test2() {
@@ -38,7 +37,7 @@ function Test2() {
 
   return Stack({
     children: [TextField(state), Spacer(), Button("Submit")],
-    orientation: "horizonal",
+    orientation: "horizontal",
   });
 }
 
@@ -47,30 +46,26 @@ function Test3() {
 
   return new Stack({
     children: [new TextField(state), new Spacer(), new Button("Submit")],
-    orientation: "horizonal",
+    orientation: "horizontal",
   });
 }
 
 class Input implements View {
-  state = new State("");
+  @State() state = "";
+
+  @Action()
+  submitAction = () => {
+    todoStore.add(new Todo({ text: state.value, done: false }));
+    this.state.next("");
+  };
 
   body = new Form(
     new Stack([
       new TextField(state),
       new Spacer(),
       new SubmitButton("Add"),
-    ]).orient("horizonal")
-  ).action(this.handleSubmit);
-
-  handleSubmit() {
-    todoStore.add(new Todo({ text: state.value, done: false }));
-    this.state.next("");
-  }
-
-  // Available to the caller
-  updateState(text: string) {
-    this.state.next(text);
-  }
+    ]).orient("horizontal")
+  ).action(this.submitAction);
 }
 
 // vs.
@@ -84,7 +79,7 @@ function Input() {
   };
 
   return Form(
-    Stack([TextField(state), Spacer(), SubmitButton("Add")], "horizonal"),
+    Stack([TextField(state), Spacer(), SubmitButton("Add")], "horizontal"),
     handleSubmit
   );
 }

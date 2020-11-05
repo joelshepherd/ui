@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Shows a todo text input
  */
