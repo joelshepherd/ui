@@ -20,6 +20,6 @@ export function Root() {
         help: HelpScreen,
       }),
     ]),
-    { width: 500 }
+    { style: { size: { width: 500 } } }
   );
 }

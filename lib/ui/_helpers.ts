@@ -7,7 +7,6 @@ export function bindListener<T>(
   listener: (state: T) => void
 ): void {
   if (isObservable(state)) {
-    // @todo Handle unsubscribing
     state.subscribe(listener);
   } else {
     listener(state);

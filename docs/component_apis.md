@@ -73,7 +73,7 @@ function TodoInput() {
         Spacer(10),
         SubmitButton("Add", { disabled: $disabled }),
       ],
-      { orientation: "horizonal", padding: 10 }
+      { orientation: "horizonal", style: { padding: 10 } }
     ),
     { action: handleForm }
   );
