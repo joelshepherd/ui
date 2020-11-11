@@ -1,5 +1,5 @@
 import { State } from "../lib/state";
-import { Divider, Switch, Text, VStack, _View } from "../lib/ui";
+import { Divider, Switch, Text, View, VStack } from "../lib/ui";
 import { HelpScreen } from "./screen/help";
 import { ListScreen } from "./screen/list";
 import { Nav } from "./widget/nav";
@@ -10,7 +10,7 @@ export type Screen = "list" | "help";
 export function Root() {
   const screen = new State<Screen>("list");
 
-  return _View(
+  return View(
     VStack([
       Text("Todo"),
       Nav(screen),
@@ -20,6 +20,6 @@ export function Root() {
         help: HelpScreen,
       }),
     ]),
-    { style: { size: { width: 500 } } }
+    { size: { width: 500 } }
   );
 }

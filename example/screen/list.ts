@@ -6,6 +6,7 @@ import {
   If,
   Spacer,
   SubmitButton,
+  Text,
   TextField,
   Toggle,
   VList,
@@ -42,15 +43,21 @@ function Item(todo: Todo, showDone: Observable<boolean>) {
 
 /// Show an input
 function Input(store: Store) {
-  const action = new Action();
   const text = new State("");
 
-  action.subscribe(() => {
+  const action = new Action(() => {
     store.todos.push(new Todo(text.value));
     text.next("");
   });
 
-  return Form(HStack([TextField(text), Spacer(), SubmitButton("Add")]), {
-    action,
-  });
+  return Form(
+    HStack([
+      Text("New:"),
+      Spacer(),
+      TextField(text),
+      Spacer(),
+      SubmitButton("Add"),
+    ]),
+    { action }
+  );
 }

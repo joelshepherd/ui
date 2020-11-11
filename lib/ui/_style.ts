@@ -1,43 +1,28 @@
+import { Widget } from "./_types";
+
 /// Style
 export interface Style extends Layout, Rendering {}
 
-export function setStyle(widget: HTMLElement, style?: Style): void {
-  if (style) {
-    setLayout(widget, style);
-    setRendering(widget, style);
-  }
+export function setStyle(widget: Widget, style: Style): void {
+  setLayout(widget, style);
+  setRendering(widget, style);
 }
 
 // Layout
 interface Layout {
-  offset?: Offset;
   padding?: Padding;
-  position?: Position;
   size?: Size;
 }
 
-function setLayout(
-  widget: HTMLElement,
-  { offset, padding, position, size }: Layout
-): void {
-  if (offset) setOffset(widget, offset);
+function setLayout(widget: Widget, { padding, size }: Layout): void {
   if (padding) setPadding(widget, padding);
-  if (position) setPosition(widget, position);
   if (size) setSize(widget, size);
 }
 
-type Offset = { x?: number; y?: number };
-
-function setOffset(widget: HTMLElement, { x = 0, y = 0 }: Offset): void {
-  widget.style.marginLeft = `${x}px`;
-  widget.style.marginTop = `${y}px`;
-}
-
 type Edge = "top" | "right" | "bottom" | "left";
-type EdgeSet<T> = Record<Edge, T>;
-type Padding = number | [Edge, number] | Partial<EdgeSet<number>>;
+type Padding = number | [Edge, number] | Partial<Record<Edge, number>>;
 
-function setPadding(widget: HTMLElement, padding: Padding): void {
+function setPadding(widget: Widget, padding: Padding): void {
   if (typeof padding === "number") {
     widget.style.padding = `${padding}px`;
   } else if (Array.isArray(padding)) {
@@ -50,16 +35,9 @@ function setPadding(widget: HTMLElement, padding: Padding): void {
   }
 }
 
-type Position = { x?: number; y?: number };
-
-function setPosition(widget: HTMLElement, { x = 0, y = 0 }: Offset): void {
-  widget.style.top = `${x}px`;
-  widget.style.left = `${y}px`;
-}
-
 type Size = { height?: number; width?: number };
 
-function setSize(widget: HTMLElement, { height, width }: Size): void {
+function setSize(widget: Widget, { height, width }: Size): void {
   if (height) widget.style.height = `${height}px`;
   if (width) widget.style.width = `${width}px`;
 }
@@ -74,7 +52,7 @@ interface Rendering {
 }
 
 function setRendering(
-  widget: HTMLElement,
+  widget: Widget,
   { border, color, opacity, rounding, shadow }: Rendering
 ): void {
   if (border) setBorder(widget, border);
@@ -86,32 +64,32 @@ function setRendering(
 
 type Border = { color: Color; width?: number };
 
-function setBorder(widget: HTMLElement, { color, width = 1 }: Border): void {
+function setBorder(widget: Widget, { color, width = 1 }: Border): void {
   widget.style.border = `${width}px solid ${color}`;
 }
 
 type Color = string;
 
-function setColor(widget: HTMLElement, color: Color): void {
+function setColor(widget: Widget, color: Color): void {
   widget.style.color = color;
 }
 
 type Opacity = number;
 
-function setOpacity(widget: HTMLElement, opacity: Opacity): void {
+function setOpacity(widget: Widget, opacity: Opacity): void {
   widget.style.opacity = `${opacity}`;
 }
 
 type Rounding = number;
 
-function setRounding(widget: HTMLElement, rounding: Rounding): void {
+function setRounding(widget: Widget, rounding: Rounding): void {
   widget.style.borderRadius = `${rounding}px`;
 }
 
 type Shadow = { color: Color; radius: number; x?: number; y?: number };
 
 function setShadow(
-  widget: HTMLElement,
+  widget: Widget,
   { color, radius, x = 0, y = 0 }: Shadow
 ): void {
   widget.style.boxShadow = `${x}px ${y}px ${radius}px ${color}`;

@@ -31,10 +31,9 @@ export interface MutableObservable<T> extends Observable<T> {
 export class Action<T = void>
   extends Subject<T>
   implements MutableObservable<T> {
-  static subscribe<T = void>(subscriber: (value: T) => void) {
-    const action = new Action<T>();
-    action.subscribe(subscriber);
-    return action;
+  constructor(subscriber?: (value: T) => void) {
+    super();
+    if (subscriber) this.subscribe(subscriber);
   }
 }
 

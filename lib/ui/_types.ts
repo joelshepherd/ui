@@ -11,4 +11,4 @@ export type Bind<T> = T | Observable<T>;
 export type MutBind<T> = MutableObservable<T>;
 
 export type Action = MutBind<void>;
-export type Widget = Node;
+export type Widget = HTMLElement;

@@ -1,5 +1,5 @@
-import { Widget } from "./types";
 import { setStyle, Style } from "./_style";
+import { Widget } from "./_types";
 
 interface StackOptions {
   orientation: "horizontal" | "vertical";
@@ -43,13 +43,11 @@ export function Spacer(minSize = 10) {
   return element;
 }
 
-interface ViewOptions {
-  style?: Style;
-}
+interface ViewOptions extends Style {}
 
-export function _View(child: Widget, opts: ViewOptions = {}) {
+export function View(child: Widget, opts: ViewOptions = {}) {
   const element = document.createElement("div");
-  setStyle(element, opts.style);
+  setStyle(element, opts);
   element.appendChild(child);
   return element;
 }

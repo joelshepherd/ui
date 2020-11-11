@@ -3,8 +3,8 @@ import { HStack, Tap, Text } from "../../lib/ui";
 import { Screen } from "../root";
 
 export function Nav(screen: State<Screen>) {
-  const toList = Action.subscribe(() => screen.next("list"));
-  const toHelp = Action.subscribe(() => screen.next("help"));
+  const listAction = new Action(() => screen.next("list"));
+  const helpAction = new Action(() => screen.next("help"));
 
-  return HStack([Tap(Text("List"), toList), Tap(Text("Help"), toHelp)]);
+  return HStack([Tap(Text("List"), listAction), Tap(Text("Help"), helpAction)]);
 }

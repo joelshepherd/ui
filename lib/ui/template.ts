@@ -1,6 +1,6 @@
 import { Observable } from "../state";
 import { VStack } from "./layout";
-import { Widget } from "./types";
+import { Widget } from "./_types";
 
 export function VList<T>($state: Observable<T[]>, map: (item: T) => Widget) {
   let element = VStack([]);
@@ -55,5 +55,5 @@ export function Subscribe<T>(
 }
 
 export function _Empty() {
-  return document.createDocumentFragment();
+  return document.createElement("span");
 }

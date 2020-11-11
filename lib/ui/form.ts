@@ -1,6 +1,6 @@
 import { Button, Text } from "./element";
-import { Action, Bind, MutBind, Widget } from "./types";
 import { bindProperty } from "./_helpers";
+import { Action, Bind, MutBind, Widget } from "./_types";
 
 /*
  * Could you pass `state` to form and have elements under inherit their state?

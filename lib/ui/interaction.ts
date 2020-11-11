@@ -1,5 +1,5 @@
 import { Action } from "../state";
-import { Widget } from "./types";
+import { Widget } from "./_types";
 
 export function Tap(child: Widget, action: Action) {
   const element = document.createElement("span");
