@@ -23,7 +23,7 @@ Components can be either:
 class TodoInput implements View {
   @State() value = "";
 
-  @Derive(this.value) disabled = (value) => value === "";
+  @Derive(this.value$) disabled = (value) => value === "";
 
   @Action() submit = () => {
     addTodo({ text: this.value, done: false });
@@ -32,9 +32,10 @@ class TodoInput implements View {
 
   body = new Form(
     new Stack([
-      new TextField(this.$value),
+      new Text("Input").padding({ right: 10 }),
+      new TextField(this.value$),
       new Spacer(),
-      new SubmitButton("Add").disabled(this.$disabled),
+      new SubmitButton("Add").disabled(this.disabled),
     ])
       .orient("horizontal")
       .padding(10)
@@ -55,27 +56,62 @@ class TodoInput implements View {
 - thoughts:
   - stops the anti-pattern of trying to update components after they've been created (via non-observable means)
 
+required vs. optional based:
+
 ```ts
 function TodoInput() {
-  const $value = new State("");
-  const $disabled = $value.map((value) => value === "");
+  const submit = new Action();
+  const value = new State("");
+  const disabled = value.map((value) => value === "");
 
-  const handleForm = () => {
-    addTodo({ text: $value.value, done: false });
-    $value.next("");
-  };
+  action.subscribe(() => {
+    addTodo({ text: value.value, done: false });
+    value.next("");
+  });
 
   return Form(
     Stack(
       [
-        Text("Input"),
-        TextField($value),
-        Spacer(10),
-        SubmitButton("Add", { disabled: $disabled }),
+        Text("Input", { padding: { right: 10 } }),
+        TextField(value),
+        Spacer(),
+        SubmitButton("Add", { disabled }),
       ],
-      { orientation: "horizonal", style: { padding: 10 } }
+      { orientation: "horizonal", padding: 10 }
     ),
-    { action: handleForm }
+    { action }
   );
+}
+```
+
+all as prop based:
+
+```ts
+function TodoInput() {
+  const submit = new Action();
+  const value = new State("");
+  const disabled = value.map((value) => value === "");
+
+  action.subscribe(() => {
+    addTodo({ text: value.value, done: false });
+    value.next("");
+  });
+
+  return Form({
+    action,
+    child: Stack({
+      children: [
+        Text({
+          label: "Input",
+          padding: { right: 10 },
+        }),
+        TextField({ value }),
+        Spacer(),
+        SubmitButton({ label: "Add", disabled }),
+      ],
+      orientation: "horizonal",
+      padding: 10,
+    }),
+  });
 }
 ```
