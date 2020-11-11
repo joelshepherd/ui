@@ -1,4 +1,4 @@
-import { Widget } from "./_types";
+import { Widget } from "./_type";
 
 /// Style
 export interface Style extends Layout, Rendering {}

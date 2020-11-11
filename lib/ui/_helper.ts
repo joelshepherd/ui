@@ -1,5 +1,5 @@
 import { Observable } from "../state";
-import { Bind } from "./_types";
+import { Bind } from "./_type";
 
 /// Attach a binding to a listener
 export function bindListener<T>(

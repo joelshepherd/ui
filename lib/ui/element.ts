@@ -1,5 +1,5 @@
-import { bindProperty } from "./_helpers";
-import { Action, Bind } from "./_types";
+import { bindProperty } from "./_helper";
+import { Action, Bind } from "./_type";
 
 export function Text(text: Bind<string>) {
   const element = document.createElement("span");

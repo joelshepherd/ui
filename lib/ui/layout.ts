@@ -1,5 +1,5 @@
 import { setStyle, Style } from "./_style";
-import { Widget } from "./_types";
+import { Widget } from "./_type";
 
 interface StackOptions {
   orientation: "horizontal" | "vertical";
