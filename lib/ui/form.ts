@@ -34,11 +34,12 @@ export function Form(child: Widget, { action }: FormOptions = {}) {
   return element;
 }
 
-export function TextField(value: MutBind<string>) {
+export function TextField(value: MutBind<string>, label: Bind<string> = "") {
   const element = document.createElement("input");
   element.type = "text";
   element.oninput = () => value.next(element.value);
   bindProperty(element, "value", value);
+  bindProperty(element, "placeholder", label);
   return element;
 }
 

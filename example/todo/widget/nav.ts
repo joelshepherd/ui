@@ -1,5 +1,5 @@
-import { Action, State } from "../../lib/state";
-import { HStack, Tap, Text } from "../../lib/ui";
+import { Action, State } from "../../../lib/state";
+import { HStack, Tap, Text } from "../../../lib/ui";
 import { Screen } from "../root";
 
 export function Nav(screen: State<Screen>) {

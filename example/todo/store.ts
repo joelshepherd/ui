@@ -1,4 +1,4 @@
-import { BoolState, ListState, State } from "../lib/state";
+import { BoolState, ListState, State } from "../../lib/state";
 
 export class Todo {
   text: State<string>;

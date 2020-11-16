@@ -1,5 +1,5 @@
-import { State } from "../lib/state";
-import { Divider, Switch, Text, View, VStack } from "../lib/ui";
+import { State } from "../../lib/state";
+import { Divider, Switch, Text, View, VStack } from "../../lib/ui";
 import { HelpScreen } from "./screen/help";
 import { ListScreen } from "./screen/list";
 import { Nav } from "./widget/nav";

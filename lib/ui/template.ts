@@ -2,7 +2,10 @@ import { Observable } from "../state";
 import { VStack } from "./layout";
 import { Widget } from "./_type";
 
-export function VList<T>($state: Observable<T[]>, map: (item: T) => Widget) {
+export function VList<T>(
+  $state: Observable<T[]>,
+  map: (item: T, index: number, array: T[]) => Widget
+) {
   let element = VStack([]);
 
   $state.subscribe((state) => {

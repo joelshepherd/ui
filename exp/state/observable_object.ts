@@ -3,7 +3,7 @@
 import { BehaviorSubject } from "rxjs";
 import { MutableObservable } from "../../lib/state";
 
-type ObservableObject<T> = T & {
+export type ObservableObject<T> = T & {
   readonly [K in keyof T as `${string & K}$`]: MutableObservable<T[K]>;
 };
 

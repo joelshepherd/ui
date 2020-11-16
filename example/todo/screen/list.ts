@@ -1,4 +1,4 @@
-import { Action, combine, Observable, State } from "../../lib/state";
+import { Action, combine, Observable, State } from "../../../lib/state";
 import {
   Divider,
   Form,
@@ -11,7 +11,7 @@ import {
   Toggle,
   VList,
   VStack,
-} from "../../lib/ui";
+} from "../../../lib/ui";
 import { Store, Todo } from "../store";
 
 /// List screen
