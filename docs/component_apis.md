@@ -12,11 +12,12 @@ Components can be either:
   - methods can be made available to alter the widget after creation
     - and available to caller
   - fits with mutations more
-  - pretty interface to implement, very cs'y
-  - this approach could entire skip observables
+  - pretty interfaces to implement
+  - this approach could entirely skip observables
 - cons:
   - does not output dom directly, needs to be rendered with `component.body`
-  - you need to compose the "body" if you want access to individual
+  - you need to compose the "body" if you want access to individual child widgets
+- thoughts:
   - if i wanted to allow imperative mix i'd stick with angular?
 
 ```ts
@@ -46,38 +47,37 @@ class TodoInput implements View {
 ## Functions
 
 - pros:
-  - encourages the "setup one" fire and forget pattern
+  - prevents memory-leaks by disallowing circular variable references
+  - no need to cleanup subscriptions with `sub.unsubscribe()`?
   - forces you to set up your state dependencies properly
     - in the below example, you're not going to forget to update the `disabled` property, no matter how the state is updated
+  - discourages manipulate widgets after they have been created
 - cons:
-  - means you can't pass methods up to its parent (has to used bound state)
   - forces you to use observables
+  - you cannot pass methods up to its parent (have to bind actions)
   - does not let you program imperatively if you wanted to
-- thoughts:
-  - stops the anti-pattern of trying to update components after they've been created (via non-observable means)
 
 required vs. optional based:
 
 ```ts
-function TodoInput() {
-  const submit = new Action();
-  const value = new State("");
-  const disabled = value.map((value) => value === "");
+function todoInput() {
+  const input = state({ text: "" });
+  const disabled = state.text$.map((text) => text === "");
 
-  action.subscribe(() => {
-    addTodo({ text: value.value, done: false });
-    value.next("");
+  const submit = action(() => {
+    addTodo({ ...input });
+    input.text = "";
   });
 
-  return Form(
-    Stack(
-      [
-        Text("Input", { padding: { right: 10 } }),
-        TextField(value),
-        Spacer(),
-        SubmitButton("Add", { disabled }),
-      ],
-      { orientation: "horizonal", padding: 10 }
+  return form(
+    padding(
+      verticalStack([
+        padding(text("Input"), { right: 10 }),
+        textField(state.text$),
+        spacer(),
+        submitButton("Add", { disabled }),
+      ]),
+      10
     ),
     { action }
   );
